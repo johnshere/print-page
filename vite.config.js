@@ -46,7 +46,7 @@ export default defineConfig({
   },
   build: {
       rollupOptions: {
-          external: ["vue","file-saver","html2canvas","jspdf"],
+          external: ["vue","file-saver","html2canvas","jspdf","exceljs"],
           output: {
               globals: {
                   vue: "Vue"
