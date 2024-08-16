@@ -1,0 +1,250 @@
+.print-page {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #e6e6e6;
+
+    /* 根据需要调整背景色 */
+    .print-page_ {
+        &head {
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 6px;
+
+            &-row {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 18px;
+            }
+
+            section {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                white-space: nowrap;
+                gap: 6px;
+                line-height: 0.9;
+                font-size: 14px;
+            }
+
+            label {
+                font-weight: bold;
+                font-size: 16px;
+                margin-right: 6px;
+            }
+
+            .select {
+                width: 50px;
+                margin-right: 6px;
+
+                &.w55 {
+                    width: 55px;
+                }
+
+                &.w60 {
+                    width: 60px;
+                }
+            }
+
+            .checkbox {
+                --eu-checkbox-checked-text-color: black;
+                margin-right: 6px;
+                display: flex;
+                align-items: center;
+                gap: 2px;
+            }
+
+            .button {
+                margin-left: 0;
+            }
+        }
+
+        &body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            margin: 6px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-around;
+        }
+
+        &origin {
+            height: unset !important;
+            min-height: 297mm;
+            overflow-y: unset;
+
+            &.hideOrigin {
+                position: absolute;
+                left: -200%;
+            }
+        }
+
+        &tool {
+            position: absolute;
+            left: -200%;
+
+            // visibility: visible;
+            // left: 0;
+        }
+
+        &a4-wrap {
+            padding: 12mm;
+            margin-bottom: 4mm;
+            box-sizing: border-box;
+            overflow: hidden;
+            background: white;
+            box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.4);
+
+            /* 阴影 */
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            table {
+                border-spacing: 0;
+                width: 100%;
+                border: unset;
+
+                th,
+                td {
+                    text-align: center;
+                    white-space: normal;
+                    word-break: break-all;
+                    border: 0 solid black;
+                    border-top-width: 1px;
+                    border-right-width: 1px;
+
+                    &:first-child {
+                        border-left-width: 1px;
+                    }
+                }
+
+                thead tr:last-child th,
+                tbody tr:last-child td {
+                    border-bottom-width: 1px;
+                }
+
+                tbody tr:first-child td {
+                    border-top-width: 0 !important;
+                }
+
+                th {
+                    font-weight: bold;
+                }
+
+                tr {
+                    page-break-inside: avoid !important;
+                }
+
+                img {
+                    width: 1rem;
+                    height: 0.5rem;
+                    vertical-align: middle;
+                    float: left;
+                }
+            }
+        }
+    }
+
+    &.portrait {
+        min-width: 250mm;
+        overflow-x: auto;
+
+        .print-page_ {
+            &a4-wrap {
+                width: 210mm;
+                height: 297mm;
+            }
+        }
+
+        @media screen and (max-width: 450mm) {
+            .print-page_origin {
+                position: absolute;
+                left: -200%;
+            }
+        }
+    }
+
+    &.landscape {
+        min-width: 340mm;
+        overflow-x: auto;
+
+        .eu-popper {
+            display: none;
+        }
+
+        .print-page_ {
+            &origin {
+                // display: none;
+                // visibility: hidden;
+                position: absolute;
+                left: -200%;
+            }
+
+            &a4-wrap {
+                width: 297mm;
+                height: 210mm;
+            }
+        }
+    }
+
+    .isHide {
+        display: none;
+    }
+
+    @media print {
+        height: unset;
+        width: unset;
+        min-width: unset !important;
+
+        .noprint {
+            display: none;
+        }
+
+        .print-page_ {
+            &body {
+                padding: 0;
+                margin: 0;
+            }
+
+            &origin {
+                display: none;
+                // visibility: hidden;
+            }
+
+            &a4-wrap {
+                box-shadow: unset;
+                margin: 0;
+            }
+        }
+    }
+}
+
+@media print {
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: unset;
+        min-width: unset !important;
+        width: unset !important;
+        overflow-x: hidden;
+    }
+
+    #__vconsole,
+    #vue-inspector-container,
+    #__vue-devtools-container__ {
+        display: none;
+    }
+}
