@@ -3,7 +3,6 @@
         <div v-show="mode !== 'purity'" class="print-page_head noprint">
             <slot :slot-scope="{ ...options }" name="bar">
                 <div class="print-page_head-row">
-                    <slot name="backButton"></slot>
                     <slot name="fontSize">
                         <section>
                             <label>字体设置:</label>
