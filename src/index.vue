@@ -139,7 +139,7 @@
                                         }">
                                             项目负责人签字：
                                         </td>
-                                        <td :colspan="(columns?.length ?? 1) - 1" :style="{
+                                        <td v-if="columns?.length" :colspan="columns.length - 1" :style="{
                                             textAlign: 'left',
                                             fontSize: options.signFontSize! + options.unit,
                                             lineHeight: 3.5,

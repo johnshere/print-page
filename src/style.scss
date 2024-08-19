@@ -138,6 +138,10 @@
                     border-top-width: 0 !important;
                 }
 
+                tbody tr td:last-child {
+                    border-right-width: 1px !important;
+                }
+
                 th {
                     font-weight: bold;
                 }
