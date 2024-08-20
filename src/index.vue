@@ -232,10 +232,10 @@ const emit = defineEmits<{
 }>()
 
 const getParam = (param: string) => {
-    const [s, r] = location.href.match(new RegExp(`${param}=([0-9A-Za-z]*)`)) || []
-    return r as any
+    const [s, r] = location.href.match(new RegExp(`[\\?&]${param}=([^&#]*)`)) || []
+    return r ? decodeURIComponent(r) : ''
 }
-const mode = ref<Mode>(props.mode || getParam('mode') || 'normal')
+const mode = ref<Mode>(props.mode || (getParam('mode') as any) || 'normal')
 const defaultOptions: Options = {
     titleFontSize: '9',
     contentFontSize: '8',
