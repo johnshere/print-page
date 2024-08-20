@@ -1,65 +1,85 @@
 <template>
-    <PrintPage ref="printRef" :model-value="options" fileName="测试"
-        :sign="{ managerSignShow: false, otherSignShow: false, expertSignShow: false }" :columns :data>
-        <template #title>
-            <tr>
-                <th colspan="3" style="font-size: 14pt">
-                    标题
-                </th>
-            </tr>
-        </template>
-        <template #subTitle>
-            <tr>
-                <th colspan="3" :style="{
+  <PrintPage
+    ref="printRef"
+    :model-value="options"
+    fileName="测试"
+    :sign="{
+      managerSignShow: false,
+      otherSignShow: false,
+      expertSignShow: false,
+    }"
+    :columns
+    :data
+  >
+    <template #title>
+      <tr>
+        <th colspan="3" style="font-size: 14pt">标题</th>
+      </tr>
+    </template>
+    <template #subTitle>
+      <tr>
+        <th
+          colspan="3"
+          :style="{
                     fontSize: options.titleFontSize! + options.unit, textAlign: 'left', lineHeight: 1 + Number(options.titleLineHeight)
-                }">
-                    副标题
-                </th>
-            </tr>
-        </template>
-    </PrintPage>
+                }"
+        >
+          副标题
+        </th>
+      </tr>
+    </template>
+  </PrintPage>
 </template>
 <script lang="ts" setup>
-import '@/style.scss'
-import PrintPage from '@/index.vue'
-import type { TableColumns, Options } from '@/types.d.ts'
+import '@/style.scss';
+import PrintPage from '@/index.vue';
+import type { TableColumns, Options } from '@/types.d.ts';
 
-const printRef = ref<InstanceType<typeof PrintPage>>()
+const printRef = ref<InstanceType<typeof PrintPage>>();
 
-const options = reactive<Options>({})
-const data = ref<any[]>([])
+const options = reactive<Options>({});
+const data = ref<any[]>([]);
 const columns: TableColumns<any> = [
-    {
-        title: '序号',
-        type: 'index'
-    },
-    {
-        title: '编号',
-        prop: 'number'
-    },
-    {
-        title: '名称',
-        prop: 'name'
-    }
-]
-// ;(window as any).test = (data) =>{
-//     console.log(data)
-// }
-// window.addEventListener('message', function(data){
-//     console.log(data)
-// })
+  {
+    title: '序号',
+    type: 'index',
+  },
+  {
+    title: '编号',
+    prop: 'number',
+  },
+  {
+    title: '名称',
+    prop: 'name',
+  },
+];
+
+window.addEventListener('message', function (data) {
+  console.log(data);
+});
 onMounted(async () => {
-    await nextTick()
-    printRef.value?.drawA4Paper()
-    setTimeout(() => {
-        if (location.href.includes('excelImmediate')) {
-            printRef.value?.generateExcel()
-            window.close()
-        }
-        if (location.href.includes('pdfImmediate')) {
-            printRef.value?.generatePdf()
-            window.close()
-        }
-    }, 300)
-})
+  await nextTick();
+  printRef.value?.drawA4Paper();
+  setTimeout(() => {
+    if (location.href.includes('excelImmediate')) {
+      printRef.value?.generateExcel();
+    }
+    if (location.href.includes('pdfImmediate')) {
+      printRef.value?.generatePdf();
+    }
+  }, 300);
+});
+if (window.top === window) {
+  setTimeout(() => {
+    const iframe = document.createElement('iframe');
+    iframe.src = location.href + '?excelImmediate=1&saved=tttt';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '400mm';
+    iframe.style.left = '-500mm';
+    document.body.appendChild(iframe);
+  }, 4000);
+}
+const complete = () => {
+  console.log('完成');
+};
 </script>

@@ -542,12 +542,22 @@ const saveFile = (data: ArrayBuffer, fileName: string) => {
     if (props.save) {
         return props.save(data)
     }
-    const type = props.openerSave || getParam('openerSave')
+    const opener = window.opener || window.parent
+    const type = getParam('save')
     if (type) {
-        (window.opener || window.parent)?.postMessage({ type, data, fileName }, '*')
+        opener?.postMessage({ type, data, fileName }, '*')
     } else {
         const blob = new Blob([data], { type: '' })
         saveAs(blob, fileName)
+        setTimeout(() => {
+            if (props.saved) {
+                return props.saved(fileName)
+            }
+            const type = getParam('saved')
+            if (type) {
+                opener?.postMessage({ type, fileName }, '*')
+            }
+        }, 300);
     }
 }
 const generateExcel = async () => {

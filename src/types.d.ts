@@ -84,10 +84,20 @@ export interface PrintProps {
   showOrigin?: boolean
   /** （可通过href传参）mode=purity模式下不显示head */
   mode?: Mode
-  /** 自定义保存 */
+  /**
+   * 自定义保存方法
+   * 亦可以通过href，例如：?save=test，优先级低于方法传参，调用(window.opener||window.parent).postMessage({type:[save], ArrayBuffer, fileName})
+   * @param arrayBuffer 
+   * @returns 
+   */
   save?: (arrayBuffer: ArrayBuffer) => void
-  /** （可通过href传参）方法名，优先级低于save，调用(window.opener||window.parent).postMessage({type:[openerSave], arrayBuffer, fileName}) */
-  openerSave?: string
+  /**
+   * 完成回调在未使用自定义save时调用
+   * 亦可以通过href，例如：?saved=test2，优先级低于方法传参，调用(window.opener||window.parent).postMessage({type:[saved], fileName})
+   * @param fileName 
+   * @returns 
+   */
+  saved?: (fileName: string) => void
 }
 export interface PrintExposed {
   /**
