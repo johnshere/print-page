@@ -232,7 +232,7 @@ const emit = defineEmits<{
 }>()
 
 const getParam = (param: string) => {
-    const [s, r] = location.href.match(new RegExp(`${param}=([01A-Za-z]*)`)) || []
+    const [s, r] = location.href.match(new RegExp(`${param}=([0-9A-Za-z]*)`)) || []
     return r as any
 }
 const mode = ref<Mode>(props.mode || getParam('mode') || 'normal')
