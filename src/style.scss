@@ -1,5 +1,5 @@
 .print-page {
-    min-height: 100vh;
+    height: 100vh;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -75,6 +75,7 @@
             display: flex;
             align-items: flex-start;
             justify-content: space-around;
+            overflow: auto;
         }
 
         &origin {
@@ -160,9 +161,6 @@
     }
 
     &.portrait {
-        min-width: 250mm;
-        overflow-x: auto;
-
         .print-page_ {
             &a4-wrap {
                 width: 210mm;
@@ -179,9 +177,6 @@
     }
 
     &.landscape {
-        min-width: 300mm;
-        overflow-x: auto;
-
         .eu-popper {
             display: none;
         }
