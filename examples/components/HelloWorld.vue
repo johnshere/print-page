@@ -13,13 +13,13 @@
   >
     <template #title>
       <tr>
-        <th colspan="3" style="font-size: 14pt">标题</th>
+        <th colspan="5" style="font-size: 14pt">标题</th>
       </tr>
     </template>
     <template #subTitle>
       <tr>
         <th
-          colspan="3"
+          colspan="5"
           :style="{
                     fontSize: options.titleFontSize! + options.unit, textAlign: 'left', lineHeight: 1 + Number(options.titleLineHeight)
                 }"
@@ -27,6 +27,36 @@
           副标题
         </th>
       </tr>
+    </template>
+    <template #header>
+      <tr>
+        <th>序号</th>
+        <th>编号</th>
+        <th>名称</th>
+        <th>电费</th>
+        <th>电饭锅</th>
+      </tr>
+    </template>
+    <template #tbody>
+      <tbody>
+        <tr>
+          <td>1-1</td>
+          <td colspan="3">1-2</td>
+          <td>1-3</td>
+        </tr>
+        <tr>
+          <td>2-1</td>
+          <td colspan="2">2-2</td>
+          <td>2-3</td>
+          <td rowspan="2">2-4</td>
+        </tr>
+        <tr>
+          <td>3-1</td>
+          <td>3-2</td>
+          <td>3-3</td>
+          <td>3-4</td>
+        </tr>
+      </tbody>
     </template>
   </PrintPage>
 </template>
@@ -52,6 +82,14 @@ const columns: TableColumns<any> = [
     title: '名称',
     prop: 'name',
   },
+  {
+    title: '电费',
+    prop: 'fee',
+  },
+  {
+    title: '电饭锅',
+    prop: 'r',
+  },
 ];
 
 window.addEventListener('message', function (data) {
@@ -69,16 +107,16 @@ onMounted(async () => {
     }
   }, 300);
 });
-if (window.top === window) {
-  setTimeout(() => {
-    const iframe = document.createElement('iframe');
-    iframe.src = location.href + '?excelImmediate=1&saved=tttt';
-    iframe.style.position = 'absolute';
-    iframe.style.width = '400mm';
-    iframe.style.left = '-500mm';
-    document.body.appendChild(iframe);
-  }, 4000);
-}
+// if (window.top === window) {
+//   setTimeout(() => {
+//     const iframe = document.createElement('iframe');
+//     iframe.src = location.href + '?excelImmediate=1&saved=tttt';
+//     iframe.style.position = 'absolute';
+//     iframe.style.width = '400mm';
+//     iframe.style.left = '-500mm';
+//     document.body.appendChild(iframe);
+//   }, 4000);
+// }
 const complete = () => {
   console.log('完成');
 };
