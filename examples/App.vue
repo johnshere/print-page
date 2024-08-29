@@ -1,7 +1,8 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import test from './components/test.vue'
+// import test from './components/test2.vue'
 </script>
 
 <template>
-  <HelloWorld msg="Vite + Vue" />
+  <test />
 </template>
