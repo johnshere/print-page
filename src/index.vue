@@ -521,11 +521,12 @@ const table2ExcelSheet = async (
 
   const getOffset = (ridx: number, cidx: number) => {
     let offset = 0;
-    for (let i = 0; i < ridx + 1; i++) {
-      for (let cell of Array.from(table.rows.item(i).cells)) {
+    for (let i = 0; i <= ridx; i++) {
+      for (let j = 0; j <= cidx; j++) {
+        const cell = table.rows.item(i)?.cells.item(j);
         if (!cell) continue;
-        const x = Number(cell.dataset.x) || 0;
-        if (x > cidx) continue
+        let x = Number(cell.dataset.x) || j;
+        if (x > cidx) continue;
         if (i === ridx && x !== cidx) {
           offset += cell.colSpan - 1;
         }
@@ -545,7 +546,7 @@ const table2ExcelSheet = async (
     for (let ci = 0; ci < row.cells.length; ci++) {
       const tableCell = row.cells.item(ci);
       const cidx = ci + getOffset(ridx, ci);
-      tableCell.dataset.x = String(cidx)
+      tableCell.dataset.x = String(cidx);
       const size = gainSize(tableCell);
       _widths.push(size.wholeWidth);
       maxHeight = Math.max(maxHeight, size.wholeHeight);
