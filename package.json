@@ -1,7 +1,7 @@
 {
   "name": "print-page",
   "private": false,
-  "version": "1.0.19",
+  "version": "1.0.20",
   "main": "dist/print-page.umd.js",
   "module": "dist/print-page.mjs",
   "types": "src/types.d.ts",
