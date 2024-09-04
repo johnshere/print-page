@@ -367,6 +367,9 @@ function generatePreview(content: HTMLElement, container?: HTMLElement) {
 
   let node: HTMLElement;
   while ((node = it.next().value)) {
+    if (node.nodeName === '#comment' && node.textContent === BreakComment) {
+      nextPage();
+    }
     if (
       node instanceof HTMLDivElement ||
       node instanceof HTMLParagraphElement
@@ -710,6 +713,11 @@ defineExpose<PrintExposed>({
 });
 </script>
 <script lang="ts">
+import { defineComponent, h, Comment } from 'vue';
+// 随机生成字符内容
+const id = Math.random().toString(36).substring(2)
+const BreakComment = `PAGE-BREAK-${id} (random id)` 
+export const PrintPageBreak = defineComponent({ render: () => h(Comment, BreakComment) })
 export default {
   name: 'print-page',
 };

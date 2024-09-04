@@ -118,5 +118,6 @@ export interface PrintExposed {
   generatePdf: () => Promise<void>
 }
 
+export declare const PrintPageBreak: import("vue").DefineComponent
 export declare const PrintPage: Plugin & import("vue").DefineComponent<PrintProps, PrintExposed>
 export default PrintPage;
