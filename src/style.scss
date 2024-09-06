@@ -113,7 +113,7 @@
             table {
                 border-spacing: 0;
                 width: 100%;
-                border: unset;
+                border: 1px solid black;
                 border-collapse: collapse;
 
                 th,
@@ -121,26 +121,7 @@
                     text-align: center;
                     white-space: normal;
                     word-break: break-all;
-                    border: 0 solid black;
-                    border-top-width: 1px;
-                    border-right-width: 1px;
-
-                    &:first-child {
-                        border-left-width: 1px;
-                    }
-                }
-
-                thead tr:last-child th,
-                tbody tr:last-child td {
-                    border-bottom-width: 1px;
-                }
-
-                tbody tr:first-child td {
-                    border-top-width: 0 !important;
-                }
-
-                tbody tr td:last-child {
-                    border-right-width: 1px !important;
+                    border: 1px solid black;
                 }
 
                 th {
