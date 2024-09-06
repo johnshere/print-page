@@ -4,7 +4,6 @@
     otherSignShow: false,
     expertSignShow: false,
   }" :columns :data class="test">
-    <PrintPageBreak />
     <table style="border-collapse: collapse;page-break-before:always">
       <thead>
         <tr>
@@ -69,6 +68,7 @@
         </tr>
       </tbody><br>
     </table>
+    <PrintPageBreak />
     <table style="border-collapse: collapse;">
       <thead>
         <tr>
@@ -99,7 +99,7 @@
         </tr>
       </tbody><br>
     </table>
-    <page-break />
+    <PrintPageBreak />
     <table style="border-collapse: collapse;">
       <thead>
         <tr>
@@ -217,6 +217,6 @@ const complete = () => {
 </script>
 <style lang="scss">
 .test .print-page_origin {
-  left: 0!important;
+  // left: 0!important;
 }
 </style>

@@ -46,8 +46,16 @@
           <slot name="direction">
             <section>
               <label>纸张方向:</label>
-              <select v-model="options.orientation" class="select w60" @change="a4Size = null">
-                <option v-for="dir in Directions" :key="dir.value" :value="dir.value">
+              <select
+                v-model="options.orientation"
+                class="select w60"
+                @change="a4Size = null"
+              >
+                <option
+                  v-for="dir in Directions"
+                  :key="dir.value"
+                  :value="dir.value"
+                >
                   {{ dir.label }}
                 </option>
               </select>
@@ -84,7 +92,11 @@
       </div>
     </div>
     <div class="print-page_body">
-      <div ref="origin" class="print-page_origin print-page_a4-wrap" :class="{ hideOrigin: !showOrigin }">
+      <div
+        ref="origin"
+        class="print-page_origin print-page_a4-wrap"
+        :class="{ hideOrigin: !showOrigin }"
+      >
         <slot :slot-scope="{ ...options }">
           <table border>
             <thead>
@@ -97,19 +109,26 @@
               </slot>
               <slot :slot-scope="{ ...options }" name="subTitle">
                 <tr v-if="subTitle">
-                  <th :colspan="columns?.length"
-                    :style="{ fontSize: options.titleFontSize! + options.unit, textAlign: 'left', lineHeight: 1 + Number(options.titleLineHeight) }">
+                  <th
+                    :colspan="columns?.length"
+                    :style="{ fontSize: options.titleFontSize! + options.unit, textAlign: 'left', lineHeight: 1 + Number(options.titleLineHeight) }"
+                  >
                     {{ subTitle }}
                   </th>
                 </tr>
               </slot>
               <slot :slot-scope="{ ...options }" name="header">
                 <tr v-if="columns?.length">
-                  <th v-for="(col, i) in columns" :key="col.title + i" :class="(col as TableColumn).class" :style="{
+                  <th
+                    v-for="(col, i) in columns"
+                    :key="col.title + i"
+                    :class="(col as TableColumn).class"
+                    :style="{
                     width: (col as TableColumn).width,
                     fontSize: options.titleFontSize! + options.unit,
                     lineHeight: 1 + Number(options.titleLineHeight)
-                  }">
+                  }"
+                  >
                     {{ col.title }}
                   </th>
                 </tr>
@@ -118,12 +137,16 @@
             <slot :slot-scope="{ ...options }" name="tbody">
               <tbody>
                 <tr v-for="(row, rindex) in data || []" :key="rindex">
-                  <td v-for="(col, cindex) in columns" :key="col.title + cindex" :class="(col as TableColumn).class"
+                  <td
+                    v-for="(col, cindex) in columns"
+                    :key="col.title + cindex"
+                    :class="(col as TableColumn).class"
                     :style="{
                       width: (col as TableColumn).width,
                       fontSize: options.contentFontSize! + options.unit,
                       lineHeight: 1 + Number(options.cellLineHeight)
-                    }">
+                    }"
+                  >
                     <template v-if="(col as TableColumnIndex).type === 'index'">
                       {{ rindex + 1 }}
                     </template>
@@ -137,79 +160,66 @@
                 </tr>
                 <slot name="sign">
                   <tr v-if="signOptions.managerSignShow">
-                    <td :style="{
+                    <td
+                      v-if="columns?.length"
+                      :colspan="columns.length"
+                      :style="{
                       textAlign: 'left',
                       fontSize: options.signFontSize! + options.unit,
                       lineHeight: 3.5,
-                      borderRightWidth: 0
-                    }">
-                      项目负责人签字：
-                    </td>
-                    <td v-if="columns?.length" :colspan="columns.length - 1" :style="{
-                      textAlign: 'left',
-                      fontSize: options.signFontSize! + options.unit,
-                      lineHeight: 3.5,
-                    }">
-                      <img v-if="signOptions.managerSignImg" :src="signOptions.managerSignImg" />
+                    }"
+                    >
+                      <div style="display: inline-block; width: 1rem">
+                        项目负责人签字：
+                      </div>
+                      <img
+                        v-if="signOptions.managerSignImg"
+                        :src="signOptions.managerSignImg"
+                      />
                     </td>
                   </tr>
                   <template v-if="signOptions.otherSignShow">
-                    <tr v-for="ri in signImgRows.otherSignRows?.length || 1" :key="ri">
-                      <td :style="{
+                    <tr>
+                      <td
+                        v-if="columns?.length"
+                        :colspan="columns.length"
+                        :style="{
                         textAlign: 'left',
                         fontSize: options.signFontSize! + options.unit,
                         lineHeight: 3.5,
-                        borderRightWidth: 0,
-                        borderTopWidth: ri > 1 ? 0 : '1px'
-                      }">
-                        <div :style="{
-                          display: 'inline',
-                          color: ri > 1 ? 'transparent' : '',
-                          opacity: ri > 1 ? '0' : '1',
-                        }">
+                      }"
+                      >
+                        <div style="display: inline-block; width: 1rem">
                           其他人员签字：
                         </div>
+                        <img
+                          v-for="(im, i) in signOptions.otherSignImgs"
+                          :key="i"
+                          :src="im"
+                        />
                       </td>
-                      <template v-if="columns?.length">
-                        <td v-for="ci in columns.length - 1" :key="ci" :style="{
-                          borderTopWidth: ri > 1 ? 0 : '1px',
-                          borderRightWidth:
-                            ci < columns.length - 1 ? 0 : '1px',
-                        }">
-                          <img v-if="signImgRows.otherSignRows?.[ri - 1]?.[ci - 1]"
-                            :src="signImgRows.otherSignRows[ri - 1][ci - 1]" />
-                        </td>
-                      </template>
                     </tr>
                   </template>
                   <template v-if="signOptions.expertSignShow">
-                    <tr v-for="ri in signImgRows.expertSignRows?.length || 1" :key="ri">
-                      <td :style="{
+                    <tr>
+                      <td
+                        v-if="columns?.length"
+                        :colspan="columns.length"
+                        :style="{
                         textAlign: 'left',
                         fontSize: options.signFontSize! + options.unit,
                         lineHeight: 3.5,
-                        borderRightWidth: 0,
-                        borderTopWidth: ri > 1 ? 0 : '1px'
-                      }">
-                        <div :style="{
-                          display: 'inline',
-                          color: ri > 1 ? 'transparent' : '',
-                          opacity: ri > 1 ? '0' : '1',
-                        }">
+                      }"
+                      >
+                        <div style="display: inline-block; width: 1rem">
                           专家签字：
                         </div>
+                        <img
+                          v-for="(im, i) in signOptions.expertSignImgs"
+                          :key="i"
+                          :src="im"
+                        />
                       </td>
-                      <template v-if="columns?.length">
-                        <td v-for="ci in columns.length - 1" :key="ci" :style="{
-                          borderRightWidth:
-                            ci < columns.length - 1 ? 0 : '1px',
-                          borderTopWidth: ri > 1 ? 0 : '1px',
-                        }">
-                          <img v-if="
-                            signImgRows.expertSignRows?.[ri - 1]?.[ci - 1]
-                          " :src="signImgRows.expertSignRows[ri - 1][ci - 1]" />
-                        </td>
-                      </template>
                     </tr>
                   </template>
                 </slot>
@@ -225,6 +235,8 @@
 </template>
 <script lang="ts" setup>
 import * as ExcelJS from 'exceljs';
+// @ts-ignore
+import Anchor from 'exceljs/lib/doc/anchor';
 import { type Border } from 'exceljs';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
@@ -246,7 +258,7 @@ import type {
   PrintExposed,
 } from './types';
 import { watch, onUnmounted, reactive, computed, ref, onMounted } from 'vue';
-import { Mode } from './types';
+import type { Mode } from './types';
 
 const props = defineProps<PrintProps>();
 const emit = defineEmits<{
@@ -277,21 +289,6 @@ const signOptions = reactive<SignOptions>({
   managerSignShow: true,
   expertSignShow: true,
   ...props.sign,
-});
-// 其他人员签名过多时 换行分组
-const signImgRows = computed(() => {
-  const chunkSize = (props.columns?.length ?? 0) - 1;
-  if (chunkSize <= 0) return { otherSignRows: [], expertSignRows: [] };
-  const split = (arr?: string[]) =>
-    arr?.reduce((acc, val, idx) => {
-      if (idx % chunkSize === 0) acc.push([]);
-      acc[Math.floor(idx / chunkSize)].push(val);
-      return acc;
-    }, [] as string[][]);
-  return {
-    otherSignRows: split(signOptions.otherSignImgs),
-    expertSignRows: split(signOptions.expertSignImgs),
-  };
 });
 
 const origin = ref<HTMLDivElement>();
@@ -513,11 +510,11 @@ const table2ExcelSheet = async (
         header: 0,
         footer: 0,
       },
-      fitToPage: true, // 自动调整以适应页面
-      fitToWidth: 1, // 可选：尝试调整至指定宽度的页数，默认为1
-      fitToHeight: 4, // 可选：尝试调整至指定高度的页数，默认为0表示不限制
+      // fitToPage: true, // 自动调整以适应页面
+      // fitToWidth: 1, // 可选：尝试调整至指定宽度的页数，默认为1
+      // fitToHeight: 4 // 可选：尝试调整至指定高度的页数，默认为0表示不限制
     },
-    properties: { defaultColWidth: 15, defaultRowHeight: 10 },
+    properties: { defaultColWidth: 14, defaultRowHeight: 10 },
     views: [{ showGridLines: false }],
   });
   worksheet.state = 'visible';
@@ -541,13 +538,17 @@ const table2ExcelSheet = async (
     return offset;
   };
   let widths: number[] = [];
+  const imgRows = {} as Record<number, any>;
   for (let ridx = 0; ridx < table.rows.length; ridx++) {
     const row = table.rows.item(ridx);
+    if (!row) continue;
     const isHead = row.parentElement?.tagName === 'THEAD';
     const _widths: number[] = [];
     let maxHeight = 0;
+    const imgs = [] as any;
     for (let ci = 0; ci < row.cells.length; ci++) {
       const tableCell = row.cells.item(ci);
+      if (!tableCell) continue;
       const cidx = ci + getOffset(ridx, ci);
       tableCell.dataset.x = String(cidx);
       const size = gainSize(tableCell);
@@ -599,11 +600,7 @@ const table2ExcelSheet = async (
             base64: node.src,
             extension: type as any,
           });
-          const { width, height } = gainSize(node);
-          worksheet.addImage(imageId, {
-            tl: { col: cidx, row: ridx },
-            ext: { width, height },
-          });
+          imgs.push({ imageId, ridx, cidx, node });
           return;
         }
         if (node instanceof HTMLElement) {
@@ -619,6 +616,7 @@ const table2ExcelSheet = async (
       });
       cell.value = { richText };
     }
+    imgs.length && (imgRows[ridx] = imgs);
     widths = _widths.length > widths.length ? _widths : widths;
     worksheet.getRow(ridx + 1).height = maxHeight;
   }
@@ -626,6 +624,53 @@ const table2ExcelSheet = async (
   const ratio = 0.15;
   // 设置每列宽度
   widths.forEach((w, ci) => (worksheet.getColumn(ci + 1).width = w * ratio));
+  const wrapWidth = widths.slice(1).reduce((a, b) => a + b, 0);
+
+  Object.keys(imgRows).forEach((r) => {
+    const imgs = imgRows[Number(r)];
+    const nodes = table.rows.item(Number(r))!.cells.item(0)!.children;
+    const initX = Array.from(nodes)[0].getBoundingClientRect().width;
+    let sumX = initX;
+    let offsetX = sumX;
+    let offsetY = 2;
+    let cidx = 0;
+    let i = -1;
+    const each = () => {
+      i++;
+      if (i >= imgs.length) return;
+      const { imageId, ridx, node } = imgs[i];
+      const { width, height } = gainSize(node);
+      const colWidth = widths[cidx];
+      if (offsetX > colWidth) {
+        cidx++;
+        i--;
+        if (cidx >= widths.length || sumX + width > wrapWidth) {
+          cidx = 0;
+          offsetY += height + 1;
+          offsetX = sumX = initX;
+          return each();
+        }
+        offsetX = offsetX - colWidth;
+        return each();
+      }
+      const an = new Anchor();
+      an.worksheet = worksheet;
+      an.col = cidx;
+      an.row = ridx;
+      an.nativeColOff = offsetX * 10800;
+      an.nativeRowOff = offsetY * 10000;
+
+      worksheet.addImage(imageId, {
+        tl: an,
+        ext: { width, height },
+        editAs: 'oneCell',
+      });
+      offsetX += width;
+      sumX += width;
+      each();
+    };
+    each();
+  });
 };
 const saveFile = (data: ArrayBuffer, fileName: string) => {
   console.log(`${fileName} byteLength: ${data.byteLength}`);
@@ -715,9 +760,11 @@ defineExpose<PrintExposed>({
 <script lang="ts">
 import { defineComponent, h, Comment } from 'vue';
 // 随机生成字符内容
-const id = Math.random().toString(36).substring(2)
-const BreakComment = `PAGE-BREAK-${id} (random id)` 
-export const PrintPageBreak = defineComponent({ render: () => h(Comment, BreakComment) })
+const id = Math.random().toString(36).substring(2);
+const BreakComment = `PAGE-BREAK-${id} (random id)`;
+export const PrintPageBreak = defineComponent({
+  render: () => h(Comment, BreakComment),
+});
 export default {
   name: 'print-page',
 };
