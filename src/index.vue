@@ -169,7 +169,7 @@
                       lineHeight: 3.5,
                     }"
                     >
-                      <div style="display: inline-block; width: 1rem">
+                      <div style="display: inline-block; min-width: 8em">
                         项目负责人签字：
                       </div>
                       <img
@@ -189,7 +189,7 @@
                         lineHeight: 3.5,
                       }"
                       >
-                        <div style="display: inline-block; width: 1rem">
+                        <div style="display: inline-block; min-width: 8em">
                           其他人员签字：
                         </div>
                         <img
@@ -211,7 +211,7 @@
                         lineHeight: 3.5,
                       }"
                       >
-                        <div style="display: inline-block; width: 1rem">
+                        <div style="display: inline-block; min-width: 8em">
                           专家签字：
                         </div>
                         <img
