@@ -1,3 +1,5 @@
+import { TableTdPosition, TableTdPositionItem } from "./types"
+
 /**
 * 纸张方向
 */
@@ -52,3 +54,66 @@ export function rgb2Hex(rgb: string, isAlpha = true, type: 'argb' | 'rgba' = 'ar
     }
     return str
 }
+
+/**获取单元格rowIdx,colIdx真实的x坐标位置 */
+const getTdRealPos = (
+    tdsPos: TableTdPosition,
+    rowIdx: number,
+    colIdx: number
+) => {
+    let colspanNum = 0;
+    let flagNum = 0;
+    if (colIdx != 0) {
+        const preTdPos = tdsPos[rowIdx][colIdx - 1];
+        flagNum = preTdPos.position.x + preTdPos.colspan - 1;
+    }
+    for (let i = rowIdx; i >= 0; i--) {
+        const rowCols = tdsPos[i];
+        for (let j = 0; j < rowCols.length; j++) {
+            const col = rowCols[j];
+            if (i == rowIdx && j < colIdx) {
+                //同一行单元格对后面单元格x坐标影响
+                colspanNum += col.colspan;
+            } else if (i < rowIdx && col.rowspan + i - 1 >= rowIdx) {
+                if (
+                    col.position.x + col.colspan - 1 <= flagNum ||
+                    colspanNum == col.position.x
+                ) {
+                    //上面单元格rowspan对x坐标的影响
+                    colspanNum += col.colspan;
+                }
+            }
+        }
+    }
+    return { x: colspanNum, y: rowIdx };
+};
+/**
+ * 计算表格中单元格位置坐标
+ * @param table 
+ * @returns TableTdPosition
+ */
+export const calculateTableTdPosition = (table: HTMLTableElement) => {
+    const tdsPos: TableTdPosition = [];
+    const trs = Array.from(table.rows || []);
+    for (let i = 0; i < trs.length; i++) {
+        const tr = trs[i];
+        const tds = Array.from(tr.cells);
+        tdsPos[i] = [];
+        for (let j = 0; j < tds.length; j++) {
+            const td = tds[j];
+            const rowSpan = td.rowSpan ? Number(td.rowSpan) : 1;
+            const colSpan = td.colSpan ? Number(td.colSpan) : 1;
+            tdsPos[i][j] = {
+                rowspan: rowSpan,
+                colspan: colSpan,
+            } as TableTdPositionItem;
+        }
+    }
+    //逐个单元格坐标修复。修复顺序为从上到下，从左到右。即ABCDEFG。。。的顺序修复。
+    tdsPos.forEach(function (rowCols, y) {
+        rowCols.forEach(function (col, x) {
+            col.position = getTdRealPos(tdsPos, y, x);
+        });
+    });
+    return tdsPos;
+};

@@ -247,6 +247,7 @@ import {
   FontSizes,
   TitleLineHeigts,
   CellLineHeigts,
+  calculateTableTdPosition,
 } from './libs';
 import type {
   ElementSize,
@@ -256,6 +257,8 @@ import type {
   TableColumn,
   TableColumnIndex,
   PrintExposed,
+  TableTdPosition,
+  TableTdPositionItem,
 } from './types';
 import { watch, onUnmounted, reactive, computed, ref, onMounted } from 'vue';
 import type { Mode } from './types';
@@ -379,39 +382,63 @@ function generatePreview(content: HTMLElement, container?: HTMLElement) {
       pageDiv.appendChild(node.cloneNode(true));
     }
     if (node instanceof HTMLTableElement) {
-      const temp = node.cloneNode(true) as HTMLTableElement;
-      temp.tBodies[0].innerHTML = '';
-      tool.value!.appendChild(temp);
+      let temp = node.cloneNode(true) as HTMLTableElement;
 
-      const emptyHeight = temp.offsetHeight;
-      let rows = Array.from(node.rows) || [];
-      rows = rows.filter((r) => r.parentElement?.tagName === 'TBODY');
+      let rows = Array.from(node.rows || []);
+      const filter = (r: HTMLTableRowElement) =>
+        r.parentElement?.tagName === 'TBODY';
+      rows = rows.filter(filter);
       if (!rows?.length) {
         // 判断是否需要换页
-        if (sumHeight + emptyHeight > a4Size!.contentHeight) {
+        if (sumHeight + node.offsetHeight > a4Size!.contentHeight) {
           nextPage();
         }
-        sumHeight += emptyHeight;
-        pageDiv.appendChild(temp.cloneNode(true));
+        sumHeight += node.offsetHeight;
+        pageDiv.appendChild(temp);
         break;
       }
+      const getHeight = (endRowIdx: number) => {
+        const heads = Array.from((node as HTMLTableElement).rows).filter(
+          (f) => !filter(f)
+        );
+        const bodys = rows.slice(startRowIdx, endRowIdx);
+        return heads.concat(bodys).reduce((s, c) => s + c.offsetHeight, 0);
+      };
+      const setWidth = (td: HTMLTableCellElement, i: number, j: number) => {
+        const origin = rows[i].cells.item(j);
+        td.style.width = origin.getBoundingClientRect().width + 'px';
+      };
+      let startRowIdx = 0;
+      // 不包含endRowIdx
+      const add = (endRowIdx: number) => {
+        Array.from(temp.rows)
+          .filter(filter)
+          .forEach((row, i) => {
+            Array.from(row.cells).forEach((td, j) => {
+              const isTarget = startRowIdx <= i && i < endRowIdx;
+              const y = i + td.rowSpan - 1;
+              const isMerged = startRowIdx <= y && y < endRowIdx;
+              if (isTarget || isMerged) {
+                setWidth(td, i, j);
+              } else {
+                td.style.display = 'none';
+              }
+            });
+          });
+        pageDiv.appendChild(temp);
+        temp = node.cloneNode(true) as HTMLTableElement;
+      };
       rows.forEach((row, i) => {
-        const rowHeight = row.offsetHeight;
         // 判断是否需要换页
-        if (sumHeight + temp.offsetHeight + rowHeight > a4Size!.contentHeight) {
-          if (temp.offsetHeight > emptyHeight)
-            pageDiv.appendChild(temp.cloneNode(true));
+        if (i && sumHeight + getHeight(i + 1) > a4Size!.contentHeight) {
+          add(i);
           nextPage();
-          temp.tBodies[0].innerHTML = '';
+          startRowIdx = i;
         }
-        temp.tBodies[0].appendChild(row.cloneNode(true));
       });
       // 循环最后剩余的元素
-      if (temp.offsetHeight > emptyHeight) {
-        pageDiv.appendChild(temp.cloneNode(true));
-        sumHeight += temp.offsetHeight;
-      }
-      tool.value!.removeChild(temp);
+      add(rows.length);
+      sumHeight += getHeight(rows.length);
     }
   }
   console.log('generatePreview executed');
@@ -491,6 +518,7 @@ const getFont = (style: CSSStyleDeclaration, isBold?: boolean) => {
   const color = { argb: rgb2Hex(style.color) };
   return { name, color, bold, size: parseInt(style.fontSize) };
 };
+
 const table2ExcelSheet = async (
   workbook: ExcelJS.Workbook,
   el: Element,
@@ -519,24 +547,8 @@ const table2ExcelSheet = async (
   });
   worksheet.state = 'visible';
 
-  const getOffset = (ridx: number, cidx: number) => {
-    let offset = 0;
-    for (let i = 0; i <= ridx; i++) {
-      for (let j = 0; j <= cidx; j++) {
-        const cell = table.rows.item(i)?.cells.item(j);
-        if (!cell) continue;
-        let x = Number(cell.dataset.x) || j;
-        if (x > cidx) continue;
-        if (i === ridx && x !== cidx) {
-          offset += cell.colSpan - 1;
-        }
-        if (i < ridx && cell.rowSpan - 1 + i >= ridx) {
-          offset += cell.colSpan;
-        }
-      }
-    }
-    return offset;
-  };
+  const cellPostion = calculateTableTdPosition(table);
+
   let widths: number[] = [];
   const imgRows = {} as Record<number, any>;
   for (let ridx = 0; ridx < table.rows.length; ridx++) {
@@ -549,8 +561,7 @@ const table2ExcelSheet = async (
     for (let ci = 0; ci < row.cells.length; ci++) {
       const tableCell = row.cells.item(ci);
       if (!tableCell) continue;
-      const cidx = ci + getOffset(ridx, ci);
-      tableCell.dataset.x = String(cidx);
+      const cidx = cellPostion[ridx][ci].position.x;
       const size = gainSize(tableCell);
       _widths.push(size.wholeWidth);
       maxHeight = Math.max(maxHeight, size.wholeHeight);
@@ -582,7 +593,14 @@ const table2ExcelSheet = async (
         left: getBorder(style.borderLeftWidth, style.borderLeftColor),
       };
       const { rowSpan, colSpan } = tableCell;
-      worksheet.mergeCells(ridx + 1, cidx + 1, ridx + rowSpan, cidx + colSpan);
+      if (rowSpan > 1 || colSpan > 1) {
+        worksheet.mergeCells(
+          ridx + 1,
+          cidx + 1,
+          ridx + rowSpan,
+          cidx + colSpan
+        );
+      }
 
       const font = getFont(style, isHead);
       const richText = [] as ExcelJS.RichText[];
@@ -696,9 +714,9 @@ const saveFile = (data: ArrayBuffer, fileName: string) => {
   }
 };
 const generateExcel = async () => {
-  const els = Array.from(origin.value?.children || []).filter(
-    (el) => el.tagName === 'TABLE'
-  );
+  const childs = origin.value?.children || [];
+  if (!childs?.length) throw new Error('未发现表格元素');
+  const els = Array.from(childs).filter((e) => e.tagName === 'TABLE');
   if (!els?.length) throw new Error('未发现表格元素');
   calculateSize();
   const workbook = new ExcelJS.Workbook();
@@ -754,7 +772,7 @@ defineExpose<PrintExposed>({
   drawA4Paper,
   refresh: drawA4Paper,
   generateExcel,
-  generatePdf,
+  generatePdf
 });
 </script>
 <script lang="ts">

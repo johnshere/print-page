@@ -99,6 +99,15 @@ export interface PrintProps {
    */
   saved?: (fileName: string) => void
 }
+export interface TableTdPositionItem {
+  rowspan: number;
+  colspan: number;
+  position: {
+    x: number;
+    y: number;
+  };
+}
+export type TableTdPosition = TableTdPositionItem[][]
 export interface PrintExposed {
   /**
    * 绘制a4纸
