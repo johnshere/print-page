@@ -159,41 +159,22 @@
                   </td>
                 </tr>
                 <slot name="sign">
-                  <tr v-if="signOptions.managerSignShow">
-                    <td
-                      v-if="columns?.length"
-                      :colspan="columns.length"
-                      :style="{
-                      textAlign: 'left',
-                      fontSize: options.signFontSize! + options.unit,
-                      lineHeight: 3.5,
-                    }"
-                    >
-                      <div style="display: inline-block; min-width: 8em">
-                        项目负责人签字：
-                      </div>
-                      <img
-                        v-if="signOptions.managerSignImg"
-                        :src="signOptions.managerSignImg"
-                      />
-                    </td>
-                  </tr>
-                  <template v-if="signOptions.otherSignShow">
-                    <tr>
+                  <template v-if="signOptions.managerSignShow">
+                    <tr v-for="key in Object.keys(signOptions.managerSigns || {})" :key="key">
                       <td
                         v-if="columns?.length"
                         :colspan="columns.length"
                         :style="{
-                        textAlign: 'left',
-                        fontSize: options.signFontSize! + options.unit,
-                        lineHeight: 3.5,
-                      }"
+                          textAlign: 'left',
+                          fontSize: options.signFontSize! + options.unit,
+                          lineHeight: 3.5,
+                        }"
                       >
-                        <div style="display: inline-block; min-width: 8em">
-                          其他人员签字：
+                        <div style="display: inline-block; min-width: 11em">
+                          {{key}}签字：
                         </div>
                         <img
-                          v-for="(im, i) in signOptions.otherSignImgs"
+                          v-for="(im, i) in signOptions.managerSigns?.[key] || []"
                           :key="i"
                           :src="im"
                         />
@@ -201,21 +182,43 @@
                     </tr>
                   </template>
                   <template v-if="signOptions.expertSignShow">
-                    <tr>
+                    <tr v-for="key in Object.keys(signOptions.expertSigns || {})" :key="key">
                       <td
                         v-if="columns?.length"
                         :colspan="columns.length"
                         :style="{
-                        textAlign: 'left',
-                        fontSize: options.signFontSize! + options.unit,
-                        lineHeight: 3.5,
-                      }"
+                          textAlign: 'left',
+                          fontSize: options.signFontSize! + options.unit,
+                          lineHeight: 3.5,
+                        }"
                       >
-                        <div style="display: inline-block; min-width: 8em">
-                          专家签字：
+                        <div style="display: inline-block; min-width: 11em">
+                          {{key}}签字：
                         </div>
                         <img
-                          v-for="(im, i) in signOptions.expertSignImgs"
+                          v-for="(im, i) in signOptions.expertSigns?.[key] || []"
+                          :key="i"
+                          :src="im"
+                        />
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-if="signOptions.otherSignShow">
+                    <tr v-for="key in Object.keys(signOptions.otherSigns || {})" :key="key">
+                      <td
+                        v-if="columns?.length"
+                        :colspan="columns.length"
+                        :style="{
+                          textAlign: 'left',
+                          fontSize: options.signFontSize! + options.unit,
+                          lineHeight: 3.5,
+                        }"
+                      >
+                        <div style="display: inline-block; min-width: 11em">
+                          {{key}}签字：
+                        </div>
+                        <img
+                          v-for="(im, i) in signOptions.otherSigns?.[key] || []"
                           :key="i"
                           :src="im"
                         />

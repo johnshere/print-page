@@ -34,11 +34,11 @@ export interface Options {
 */
 export interface SignOptions {
   managerSignShow?: boolean
-  managerSignImg?: string
-  otherSignShow?: boolean
-  otherSignImgs?: string[]
+  managerSigns?: Record<string, string[]>
   expertSignShow?: boolean
-  expertSignImgs?: string[]
+  expertSigns?: Record<string, string[]>
+  otherSignShow?: boolean
+  otherSigns?: Record<string, string[]>
 }
 export interface ElementSize {
   width: number
