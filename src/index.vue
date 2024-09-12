@@ -678,8 +678,8 @@ const table2ExcelSheet = async (
       an.worksheet = worksheet;
       an.col = cidx;
       an.row = ridx;
-      an.nativeColOff = offsetX * 10800;
-      an.nativeRowOff = offsetY * 10000;
+      an.nativeColOff = Math.floor(offsetX * 10800);
+      an.nativeRowOff = Math.floor(offsetY * 10000);
 
       worksheet.addImage(imageId, {
         tl: an,

@@ -1,4 +1,4 @@
-import { TableTdPosition, TableTdPositionItem } from "./types"
+import type { TableTdPosition, TableTdPositionItem } from "./types"
 
 /**
 * 纸张方向
