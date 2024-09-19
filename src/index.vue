@@ -279,9 +279,9 @@ const getParam = (param: string) => {
 };
 const mode = ref<Mode>(props.mode || (getParam('mode') as any) || 'normal');
 const defaultOptions: Options = {
-  titleFontSize: '9',
-  contentFontSize: '8',
-  signFontSize: '8',
+  titleFontSize: '10',
+  contentFontSize: '9',
+  signFontSize: '9',
   titleLineHeight: '0.5',
   cellLineHeight: '0.5',
   unit: 'pt',
@@ -514,12 +514,13 @@ const print = () => window.print();
 const pixelRatio = window.devicePixelRatio || 1;
 // px转英寸
 const px2In = (px: number) => px / (96 * pixelRatio);
+const px2Pt = (px: number) => px2In(px) * 72;
 
 const getFont = (style: CSSStyleDeclaration, isBold?: boolean) => {
   const bold = isBold || Number(style.fontWeight) > 400;
   const name = style.fontFamily.replace(/"/g, '');
   const color = { argb: rgb2Hex(style.color) };
-  return { name, color, bold, size: parseInt(style.fontSize) };
+  return { name, color, bold, size: px2Pt(parseFloat(style.fontSize)) };
 };
 
 const table2ExcelSheet = async (
@@ -541,11 +542,8 @@ const table2ExcelSheet = async (
         header: 0,
         footer: 0,
       },
-      // fitToPage: true, // 自动调整以适应页面
-      // fitToWidth: 1, // 可选：尝试调整至指定宽度的页数，默认为1
-      // fitToHeight: 4 // 可选：尝试调整至指定高度的页数，默认为0表示不限制
     },
-    properties: { defaultColWidth: 14, defaultRowHeight: 10 },
+    properties: { defaultColWidth: 14, defaultRowHeight: 14 },
     views: [{ showGridLines: false }],
   });
   worksheet.state = 'visible';
@@ -639,20 +637,18 @@ const table2ExcelSheet = async (
     }
     imgs.length && (imgRows[ridx] = imgs);
     widths = _widths.length > widths.length ? _widths : widths;
-    worksheet.getRow(ridx + 1).height = maxHeight;
+    worksheet.getRow(ridx + 1).height = maxHeight * 0.8
   }
-  // 转化为表格宽度时的系数
-  const ratio = 0.15;
   // 设置每列宽度
-  widths.forEach((w, ci) => (worksheet.getColumn(ci + 1).width = w * ratio));
-  const wrapWidth = widths.slice(1).reduce((a, b) => a + b, 0);
+  widths.forEach((w, ci) => (worksheet.getColumn(ci + 1).width = w * 0.135));
+  const wrapWidth = widths.reduce((a, b) => a + b, 0);
 
   Object.keys(imgRows).forEach((r) => {
     const imgs = imgRows[Number(r)];
     const nodes = table.rows.item(Number(r))!.cells.item(0)!.children;
     const initX = Array.from(nodes)[0].getBoundingClientRect().width;
-    let sumX = initX;
-    let offsetX = sumX;
+    let rowOffset = initX;
+    let tdOffset = rowOffset;
     let offsetY = 2;
     let cidx = 0;
     let i = -1;
@@ -661,33 +657,32 @@ const table2ExcelSheet = async (
       if (i >= imgs.length) return;
       const { imageId, ridx, node } = imgs[i];
       const { width, height } = gainSize(node);
-      const colWidth = widths[cidx];
-      if (offsetX > colWidth) {
+      const tdWidth = widths[cidx];
+      if (tdOffset + width > tdWidth) {
         cidx++;
         i--;
-        if (cidx >= widths.length || sumX + width > wrapWidth) {
+        if (cidx >= widths.length || rowOffset + width > wrapWidth) {
           cidx = 0;
           offsetY += height + 1;
-          offsetX = sumX = initX;
+          tdOffset = rowOffset = initX;
           return each();
         }
-        offsetX = offsetX - colWidth;
+        tdOffset = tdOffset - tdWidth;
         return each();
       }
       const an = new Anchor();
       an.worksheet = worksheet;
       an.col = cidx;
       an.row = ridx;
-      an.nativeColOff = Math.floor(offsetX * 10800);
+      an.nativeColOff = Math.floor(tdOffset * 10000);
       an.nativeRowOff = Math.floor(offsetY * 10000);
-
       worksheet.addImage(imageId, {
         tl: an,
         ext: { width, height },
         editAs: 'oneCell',
       });
-      offsetX += width;
-      sumX += width;
+      tdOffset += width * 1.08;
+      rowOffset += width * 1.08;
       each();
     };
     each();
@@ -731,7 +726,7 @@ const generateExcel = async () => {
       width: 10000,
       height: 20000,
       firstSheet: 0,
-      activeTab: 1,
+      activeTab: 0,
       visibility: 'visible',
     },
   ];
