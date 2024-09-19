@@ -559,7 +559,6 @@ const table2ExcelSheet = async (
     if (!row) continue;
     const isHead = row.parentElement?.tagName === 'THEAD';
     const _widths: number[] = [];
-    let maxHeight = 0;
     const imgs = [] as any;
     for (let ci = 0; ci < row.cells.length; ci++) {
       const tableCell = row.cells.item(ci);
@@ -567,7 +566,6 @@ const table2ExcelSheet = async (
       const cidx = cellPostion[ridx][ci].position.x;
       const size = gainSize(tableCell);
       _widths.push(size.wholeWidth);
-      maxHeight = Math.max(maxHeight, size.wholeHeight);
       const cell = worksheet.getCell(ridx + 1, cidx + 1);
       const style = getComputedStyle(tableCell);
 
@@ -639,7 +637,6 @@ const table2ExcelSheet = async (
     }
     imgs.length && (imgRows[ridx] = imgs);
     widths = _widths.length > widths.length ? _widths : widths;
-    worksheet.getRow(ridx + 1).height = maxHeight;
   }
   // 转化为表格宽度时的系数
   const ratio = 0.15;
